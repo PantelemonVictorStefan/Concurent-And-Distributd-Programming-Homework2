@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace EventHubsSender.Models.Mappings
+namespace EventSender.Models.Mappings
 {
     public static class ArticleMapping
     {

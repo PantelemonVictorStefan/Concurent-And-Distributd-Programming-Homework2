@@ -1,32 +1,30 @@
 ﻿using Azure.Messaging.EventHubs;
 using Azure.Messaging.EventHubs.Producer;
-using EventHubsSender.Models;
-using EventHubsSender.Models.Mappings;
+using EventSender.Models;
+using EventSender.Models.Mappings;
+using Microsoft.Extensions.Configuration;
 using NewsAPI;
 using NewsAPI.Constants;
 using NewsAPI.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EventHubsSender
+namespace EventSender
 {
     class Program
     {
-        private const string connectionString = "Endpoint=sb://eventhubsnamespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=wA0tsDOfbeWVZjOz3jryUDM/qJwcKs1LpJO5shhBCYs=";
-        private const string eventHubName = "EventHub1";
-        private static NewsApiClient newsApiClient = new NewsApiClient("20980be009cb41ba94becb4c008f47c2");
+        private static NewsApiClient newsApiClient;
 
-
-
-        private static async Task<IEnumerable<ArticleModel>> GetNews(string lastNews)
+        private static async Task<IEnumerable<ArticleModel>> GetNews(string lastNews, string keyword)
         {
             var articlesResponse = newsApiClient.GetEverything(new EverythingRequest
             {
-                Q = "Corona",
+                Q = keyword,
                 SortBy = SortBys.PublishedAt,
                 Language = Languages.EN,
                 From = DateTime.Now.Date,
@@ -38,6 +36,17 @@ namespace EventHubsSender
 
         static async Task Main()
         {
+            IConfiguration config = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", true, true)
+                .Build();
+
+
+            var connectionString = config.GetConnectionString("EventHub");
+            var eventHubName = config["EventHubName"];
+            var keyWord = config["Keyword"];
+            var newsApiKey = config["NewsApiKey"];
+            var delay = Convert.ToInt32(config["Delay"]) * 1000;
+            newsApiClient = new NewsApiClient(newsApiKey);
             var lastNews = "";
 
             await using (var producerClient = new EventHubProducerClient(connectionString, eventHubName))
@@ -45,7 +54,7 @@ namespace EventHubsSender
                 while (true)
                 {
                     var eventBatch = await producerClient.CreateBatchAsync();
-                    var newNews = (await GetNews(lastNews)).ToList();
+                    var newNews = (await GetNews(lastNews, keyWord)).ToList();
 
                     if (newNews.Any())
                     {
@@ -58,9 +67,8 @@ namespace EventHubsSender
                     }
 
                     Console.WriteLine($"A batch of {newNews.Count} events has been published.");
-                    await Task.Delay(10000);
+                    await Task.Delay(delay);
                 }
-
             }
         }
     }

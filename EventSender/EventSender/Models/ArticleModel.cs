@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EventHubsSender.Models
+namespace EventSender.Models
 {
     public class ArticleModel
     {
