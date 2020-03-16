@@ -10,10 +10,9 @@ namespace EventHubsReceiver
 {
     class Program
     {
-
-        private const string ehubNamespaceConnectionString = "";
+        private const string ehubNamespaceConnectionString = "Endpoint=sb://eventhubsnamespace1.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=wA0tsDOfbeWVZjOz3jryUDM/qJwcKs1LpJO5shhBCYs=";
         private const string eventHubName = "EventHub1";
-        private const string blobStorageConnectionString = "";
+        private const string blobStorageConnectionString = "DefaultEndpointsProtocol=https;AccountName=blobstoragelrscool;AccountKey=nim6vIZouBAD5gKD/fNa2h+3s7DL/fpUh1/RL9ouvwfmdfexFu8HthN30JyLs4YXVs5ZT7DpmfbxLWuO7RhBmg==;EndpointSuffix=core.windows.net";
         private const string blobContainerName = "blob-container";
         static async Task Main()
         {
