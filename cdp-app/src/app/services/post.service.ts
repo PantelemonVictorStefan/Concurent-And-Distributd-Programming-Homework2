@@ -9,7 +9,7 @@ import { Observable } from 'rxjs';
 })
 export class PostService {
 
-  postsUrl:string = 'http://wasd.xyz'
+  postsUrl:string = 'https://fagabao.azurewebsites.net/api/article?code=YUiaOTkvkocAOgawkjX8RyNLwKyu7R/TlWlsfruBlb5Xa3ZeCwVlMg=='
 
   constructor(private http:HttpClient) { }
 

@@ -1,7 +1,7 @@
 export class Post {
-    id:string;
-    title:string;
-    description:string;
-    url:string;
-    imgurl:string
+    Id:string;
+    Title:string;
+    Description:string;
+    Url:string;
+    ImgUrl:string
 }
