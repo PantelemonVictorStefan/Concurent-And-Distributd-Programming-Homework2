@@ -2,17 +2,30 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.WebSockets;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
+using Azure.Messaging.EventHubs;
+using Azure.Messaging.EventHubs.Consumer;
+using Azure.Messaging.EventHubs.Processor;
+using Azure.Storage.Blobs;
+using DataAccess;
+using DataAccess.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using PCDH2.API;
+using PCDH2.Core.Contracts.Repositories;
+using PCDH2.Core.Entities;
+using PCDH2.Services.Contracts;
 using PCDH2.Services.Implementations;
 
 namespace Presentation.PCDH2.API
@@ -29,18 +42,37 @@ namespace Presentation.PCDH2.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            
+            services.AddControllersWithViews();
+
             services.AddControllers();
+
+            services.AddAutoMapper(c => c.AddProfile<AutomapperProfile>(), typeof(Startup));
+
+            AddDependencies(services);
+        }
+
+        public void AddDependencies(IServiceCollection services)
+        {
+            services.AddSingleton<IArticleService, ArticleService>();
+
+            services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
+            services.AddDbContext<FeedContext>(options => options.UseSqlServer(Configuration["ConnectionString"]));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
 
             ConfigureWebSockets(app);
+
+            ConfigureEventReceiver(app);
 
             app.UseHttpsRedirection();
 
@@ -90,5 +122,29 @@ namespace Presentation.PCDH2.API
             });
         }
 
+        private void ConfigureEventReceiver(IApplicationBuilder app)
+        {
+            ProcessEventService.Configure(app);
+
+            string blobStorageConnectionString = Configuration["blobStorageConnectionString"];
+            string blobContainerName = Configuration["blobContainerName"];
+            string ehubNamespaceConnectionString = Configuration["ehubNamespaceConnectionString"]; 
+            string eventHubName = Configuration["eventHubName"];
+
+            string consumerGroup = EventHubConsumerClient.DefaultConsumerGroupName;
+
+            // Create a blob container client that the event processor will use 
+            BlobContainerClient storageClient = new BlobContainerClient(blobStorageConnectionString, blobContainerName);
+
+            // Create an event processor client to process events in the event hub
+            EventProcessorClient processor = new EventProcessorClient(storageClient, consumerGroup, ehubNamespaceConnectionString, eventHubName);
+
+            // Register handlers for processing events and handling errors
+            processor.ProcessEventAsync += ProcessEventService.ProcessEventHandler;
+            processor.ProcessErrorAsync += ProcessEventService.ProcessErrorHandler;
+
+            // Start the processing
+            processor.StartProcessingAsync();
+        }
     }
 }
