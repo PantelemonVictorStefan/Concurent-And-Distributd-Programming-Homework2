@@ -1,32 +1,21 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.WebSockets;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using AutoMapper;
 using Azure.Messaging.EventHubs;
 using Azure.Messaging.EventHubs.Consumer;
-using Azure.Messaging.EventHubs.Processor;
 using Azure.Storage.Blobs;
 using DataAccess;
 using DataAccess.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using PCDH2.API;
 using PCDH2.Core.Contracts.Repositories;
-using PCDH2.Core.Entities;
 using PCDH2.Services.Contracts;
 using PCDH2.Services.Implementations;
+using System;
+using System.Net.WebSockets;
 
 namespace Presentation.PCDH2.API
 {
@@ -42,7 +31,7 @@ namespace Presentation.PCDH2.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            
+
             services.AddControllersWithViews();
 
             services.AddControllers();
@@ -54,11 +43,12 @@ namespace Presentation.PCDH2.API
 
         public void AddDependencies(IServiceCollection services)
         {
-            services.AddSingleton<IArticleService, ArticleService>();
+            services.AddTransient<IArticleService, ArticleService>();
 
-            services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            services.AddTransient(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
-            services.AddDbContext<FeedContext>(options => options.UseSqlServer(Configuration["ConnectionString"]));
+            services.AddDbContext<FeedContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")),
+                ServiceLifetime.Transient, optionsLifetime: ServiceLifetime.Transient);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -128,7 +118,7 @@ namespace Presentation.PCDH2.API
 
             string blobStorageConnectionString = Configuration["blobStorageConnectionString"];
             string blobContainerName = Configuration["blobContainerName"];
-            string ehubNamespaceConnectionString = Configuration["ehubNamespaceConnectionString"]; 
+            string ehubNamespaceConnectionString = Configuration["ehubNamespaceConnectionString"];
             string eventHubName = Configuration["eventHubName"];
 
             string consumerGroup = EventHubConsumerClient.DefaultConsumerGroupName;

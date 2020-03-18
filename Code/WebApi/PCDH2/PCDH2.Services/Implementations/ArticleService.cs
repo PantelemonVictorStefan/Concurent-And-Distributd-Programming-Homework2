@@ -16,6 +16,7 @@ namespace PCDH2.Services.Implementations
         }
         public void AddArticle(Article article)
         {
+            article.CreatedDate = DateTime.UtcNow;
             repository.Add(article);
         }
     }
