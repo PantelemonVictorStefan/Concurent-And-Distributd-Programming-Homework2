@@ -47,7 +47,7 @@ namespace Presentation.PCDH2.API
 
             services.AddTransient(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
-            services.AddDbContext<FeedContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")),
+            services.AddDbContext<FeedContext>(options => options.UseSqlServer(Configuration["ConnectionString"]),
                 ServiceLifetime.Transient, optionsLifetime: ServiceLifetime.Transient);
         }
 

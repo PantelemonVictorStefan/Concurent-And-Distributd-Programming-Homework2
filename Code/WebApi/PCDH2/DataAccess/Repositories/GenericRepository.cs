@@ -21,7 +21,7 @@ namespace DataAccess.Repositories
         public async Task Add(TEntity entity)
         {
             await ctx.AddAsync(entity);
-            await ctx.SaveChangesAsync();
+            ctx.SaveChanges();
         }
 
 

@@ -13,8 +13,9 @@ namespace PCDH2.API
     {
         public AutomapperProfile()
         {
-            CreateMap<Article, ArticleModel>().ReverseMap();
-            CreateMap<Test, TestDTO>().ReverseMap();
+            CreateMap<ArticleModel, Article>()
+                .ForMember(entity => entity.CreatedDate, act => act.MapFrom(model => DateTime.UtcNow))
+                .ReverseMap();
         }
     }
 }

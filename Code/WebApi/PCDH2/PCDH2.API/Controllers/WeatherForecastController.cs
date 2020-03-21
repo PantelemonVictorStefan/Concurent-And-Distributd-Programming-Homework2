@@ -37,17 +37,6 @@ namespace Presentation.PCDH2.API.Controllers
         [HttpGet]
         public IEnumerable<WeatherForecast> Get()
         {
-            var model = new ArticleModel
-            {
-                Description = "Description",
-                ImageUrl = "ImageUrl",
-                Title = "Title",
-                Url = "Url"
-            };
-
-            var article = _mapper.Map<Article>(model);
-
-            //articleService.AddArticle(article);
 
             var rng = new Random();
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
@@ -58,16 +47,6 @@ namespace Presentation.PCDH2.API.Controllers
             })
             .ToArray();
         }
-    }
-
-    public class Test
-    {
-        public string Name { get; set; }
-    }
-
-    public class TestDTO
-    {
-        public string Name { get; set; }
     }
 }
 
