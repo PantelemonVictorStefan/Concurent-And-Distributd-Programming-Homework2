@@ -7,12 +7,12 @@ namespace EventSender.Models.Mappings
 {
     public static class ArticleMapping
     {
-        public static IEnumerable<ArticleModel> Map(this IEnumerable<Article> articles)
+        public static IEnumerable<ArticleModel> Map(this IEnumerable<Article> articles, string keyword)
         {
-            return articles.Select(a => a.Map());
+            return articles.Select(a => a.Map(keyword));
         }
 
-        public static ArticleModel Map(this Article article)
+        public static ArticleModel Map(this Article article, string keyword)
         {
             return new ArticleModel
             {
@@ -20,7 +20,8 @@ namespace EventSender.Models.Mappings
                 Title = article.Title,
                 Description = article.Description,
                 Url = article.Url,
-                ImageUrl = article.UrlToImage
+                ImageUrl = article.UrlToImage,
+                Keyword = keyword
             };
         }
     }
