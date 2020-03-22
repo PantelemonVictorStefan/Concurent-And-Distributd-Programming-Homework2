@@ -6,6 +6,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { PostsComponent } from './components/posts/posts.component';
 import { PostItemComponent } from './components/post-item/post-item.component';
+import { UpdateService } from './services/update.service';
+import { WebsocketService } from './services/websocket.service';
 
 @NgModule({
   declarations: [
@@ -18,7 +20,7 @@ import { PostItemComponent } from './components/post-item/post-item.component';
     AppRoutingModule,
     HttpClientModule
   ],
-  providers: [],
+  providers: [UpdateService, WebsocketService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
