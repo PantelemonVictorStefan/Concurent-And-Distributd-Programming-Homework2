@@ -14,19 +14,19 @@ namespace PCDH2.Services.Implementations
     public static class ProcessEventService
     {
         private static IServiceProvider serviceProvider;
+
+        public static event EventHandler<GenericEventArg> ArticlePosted;
         public static Task ProcessEventHandler(ProcessEventArgs eventArgs)
         {
             var mapper = (IMapper)serviceProvider.GetService(typeof(IMapper));
             var articleService = (IArticleService)serviceProvider.GetService(typeof(IArticleService));
-
             var json = Encoding.UTF8.GetString(eventArgs.Data.Body.ToArray());
-
             var model = JsonConvert.DeserializeObject<ArticleModel>(json);
-
-            var article= mapper.Map<Article>(model);
+            var article = mapper.Map<Article>(model);
 
             articleService.AddArticle(article);
 
+            ArticlePosted?.Invoke(null, new GenericEventArg { Data = article });
 
             return Task.CompletedTask;
         }

@@ -17,8 +17,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DataAccess\DataAccess.csproj" />
-    <ProjectReference Include="..\DataAccess\PCDH2.DataAccess.csproj" />
-    <ProjectReference Include="..\PCDH2.DataAccess\DataAccess.csproj" />
     <ProjectReference Include="..\PCDH2.Services\PCDH2.Services.csproj" />
   </ItemGroup>
 
