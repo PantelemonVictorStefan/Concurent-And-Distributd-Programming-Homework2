@@ -3,5 +3,5 @@ export class Post {
     Title:string;
     Description:string;
     Url:string;
-    ImgUrl:string
+    ImageUrl:string
 }

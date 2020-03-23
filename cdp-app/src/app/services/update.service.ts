@@ -5,7 +5,7 @@ import { map } from "rxjs/operators";
 import { WebsocketService } from "./websocket.service";
 import { Post } from '../models/Post'
 
-const WS_URL = "ws://echo.websocket.org/";
+const WS_URL = "wss://localhost:44306/ws";
 
 @Injectable()
 export class UpdateService {
@@ -20,7 +20,7 @@ export class UpdateService {
           Title: data.Title,
           Description: data.Description,
           Url: data.Url,
-          ImgUrl: data.ImgUrl
+          ImageUrl: data.ImageUrl
         }; 
       })
     );
